@@ -1,9 +1,7 @@
 (function(){
-  var global = this;
-
   var Nozzle = function() {
     this.values = {};
-  };  
+  };
 
   Nozzle.injectors = {};
 
@@ -25,7 +23,7 @@
       func = func[0];
     } else {
       var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
-      args = func.toString().match(FN_ARGS)[1].split(',');
+      args = func.toString().match(FN_ARGS)[1].split(/,\s*/);
     }
 
     return {
@@ -125,7 +123,7 @@
     if (Array.prototype.indexOf) {
       return array.indexOf(element) !== -1;
     } else {
-      for (var i = 0; i < array.length, i++) {
+      for (var i = 0; i < array.length; i++) {
         if (array[i] === element) {
           return true;
         }
@@ -146,9 +144,8 @@
     return false;
   };
 
-  var defaultNozzle = new Nozzle();  
-
-  global.zz = function(arg1, arg2) {    
+  var defaultNozzle = new Nozzle();
+  var shortcutDispatch = function(arg1, arg2) {    
     if (_isString(arg1)) {
       if (_isInjectable(arg2)) {
         defaultNozzle.factory(arg1, arg2);
@@ -160,4 +157,11 @@
     }
   };
 
-}).call(this);
+  if (typeof module !== 'undefined') {
+    module.exports = Nozzle;
+    Nozzle.zz = shortcutDispatch;
+  } else {
+    this.Nozzle = Nozzle;
+    this.zz = shortcutDispatch;
+  }
+})();
