@@ -8,8 +8,17 @@ suite('Internal', function() {
     var deps = parse(f1, 'type');
     assert.equal('type', deps.type);
     assert.equal(f1, deps.func);
+    assert.equal(3, deps.dependencies.length);
     assert.equal('a1', deps.dependencies[0]);
     assert.equal('a2', deps.dependencies[1]);
     assert.equal('a3', deps.dependencies[2]);
+
+    var f2 = ['a4', 'a5', function(b4, b5){}];
+    deps = parse(f2, 'type2');
+    assert.equal('type2', deps.type);
+    assert.equal(f2[2], deps.func);
+    assert.equal(2, deps.dependencies.length);
+    assert.equal('a4', deps.dependencies[0]);
+    assert.equal('a5', deps.dependencies[1]);
   });  
 });

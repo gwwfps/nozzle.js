@@ -19,8 +19,8 @@
   Nozzle.prototype._parseDependencies = function(func, type) {    
     var args;
     if (_isArray(func)) {
-      args = func.slice(1, func.length);
-      func = func[0];
+      args = func.slice(0, func.length-1);
+      func = func[func.length-1];
     } else {
       var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
       args = func.toString().match(FN_ARGS)[1].split(/,\s*/);
