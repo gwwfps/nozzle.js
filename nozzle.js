@@ -23,7 +23,8 @@
       func = func[func.length-1];
     } else {
       var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
-      args = func.toString().match(FN_ARGS)[1].split(/,\s*/);
+      var argList = func.toString().match(FN_ARGS)[1].trim();      
+      args = argList.length > 0 && argList.split(/,\s*/) || [];
     }
 
     return {
@@ -49,11 +50,11 @@
   };
 
   Nozzle.prototype._checkDependencies = function(name, visited) {
-    var value = this.values[name];
-    if (value === void 0) {
+    if (!this.values.hasOwnProperty(name)) {
       throw new Error("Undefined dependency: " + name);
     }
 
+    var value = this.values[name];
     if (value.type === TYPE_CONSTANT) {
       return;
     }
@@ -69,7 +70,7 @@
   };
 
   Nozzle.prototype._getValue = function(name) {
-    _checkDependencies(name, []);
+    this._checkDependencies(name, []);
 
     var parsedValue = this.values[name];
 
@@ -90,13 +91,14 @@
   };
 
   Nozzle.prototype._injectParsed = function(parsedValue) {
+    var _getValue = this._getValue.bind(this);
     return function() {
       var depNames = parsedValue.dependencies;
       var depName;
       var dependencies = [];
       for (var i = 0; i < depNames.length; i++) {
         depName = depNames[i];
-        dependencies.push(this._getValue(depName));
+        dependencies.push(_getValue(depName));
       }
       return parsedValue.func.apply(this, dependencies);
     };
