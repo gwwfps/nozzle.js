@@ -20,5 +20,13 @@ suite('Internal', function() {
     assert.equal(2, deps.dependencies.length);
     assert.equal('a4', deps.dependencies[0]);
     assert.equal('a5', deps.dependencies[1]);
-  });  
+
+    var f3 = function() {
+      return 1;
+    };
+    deps = parse(f3, 'type3');
+    assert.equal('type3', deps.type);
+    assert.equal(f3, deps.func);
+    assert.equal(0, deps.dependencies.length);
+  });
 });
