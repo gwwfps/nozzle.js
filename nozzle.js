@@ -16,14 +16,14 @@
   var TYPE_SINGLETON = 'singleton';
   var TYPE_CONSTANT = 'constant';
 
-  Nozzle.prototype._parseDependencies = function(func, type) {    
+  Nozzle.prototype._parseDependencies = function(func, type) {
     var args;
     if (_isArray(func)) {
       args = func.slice(0, func.length-1);
       func = func[func.length-1];
     } else {
       var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
-      var argList = func.toString().match(FN_ARGS)[1].trim();      
+      var argList = func.toString().match(FN_ARGS)[1].trim();
       args = argList.length > 0 && argList.split(/,\s*/) || [];
     }
 
@@ -45,7 +45,7 @@
   Nozzle.prototype.constant = function(name, value) {
     this.values[name] = {
       value: value,
-      type: TYPE_SINGLETON
+      type: TYPE_CONSTANT
     };
   };
 
@@ -114,7 +114,7 @@
   var _toStringTypeComp = function(typeName) {
     return function(obj) {
       return Object.prototype.toString.call(obj) === '[object ' + typeName + ']';
-    };    
+    };
   };
 
   var _isArray = Array.isArray || _toStringTypeComp('Array');
@@ -147,7 +147,7 @@
   };
 
   var defaultNozzle = new Nozzle();
-  var shortcutDispatch = function(arg1, arg2) {    
+  var shortcutDispatch = function(arg1, arg2) {
     if (_isString(arg1)) {
       if (_isInjectable(arg2)) {
         defaultNozzle.factory(arg1, arg2);
