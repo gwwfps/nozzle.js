@@ -44,4 +44,23 @@ suite('Internal', function() {
     assert.ok(!Nozzle._isInjectable({}));
     assert.ok(!Nozzle._isInjectable(3.14157));
   });
+
+  test('#_getFuncArgs', function() {
+    var args = Nozzle._getFuncArgs(function(f1, f2,f3, f4,f5, f6) {
+        return '';
+    });
+    assert.equal(args.length, 6);
+    assert.equal(args[0], 'f1');
+    assert.equal(args[1], 'f2');
+    assert.equal(args[2], 'f3');
+    assert.equal(args[3], 'f4');
+    assert.equal(args[4], 'f5');
+    assert.equal(args[5], 'f6');
+
+    args = Nozzle._getFuncArgs(function(){});
+    assert.equal(args.length, 0);
+
+    args = Nozzle._getFuncArgs(function(      ) {});
+    assert.equal(args.length, 0);
+  });
 });
