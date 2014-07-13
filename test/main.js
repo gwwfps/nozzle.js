@@ -98,5 +98,10 @@ suite('Main', function() {
       nozzle.inject(function(f4) {})();
     },
     /Cycle found/);
+
+    assert.throws(function() {
+      nozzle.inject({})();
+    },
+    /not injectable/);
   });
 });
