@@ -6,9 +6,7 @@
   Nozzle.injectors = {};
 
   Nozzle.get = function(name) {
-    if (!this.injectors.hasOwnProperty(name)) {
-      this.injectors[name] = new Nozzle();
-    }
+    this.injectors[name] = this.injectors[name] || new Nozzle();
     return this.injectors[name];
   };
 
@@ -16,15 +14,45 @@
   var TYPE_SINGLETON = 'singleton';
   var TYPE_CONSTANT = 'constant';
 
-  Nozzle.prototype._parseDependencies = function(func, type) {
+  Nozzle._isInjectable = function(obj) {
+    if (_isFunction(obj)) {
+      return true;
+    }
+
+    if (_isArray(obj)) {
+      for (var i = 0; i < obj.length - 1; i++) {
+        if (!_isString(obj[i])) {
+          return false;
+        }
+      }
+      var func = obj[obj.length-1];
+      if (!_isFunction(func)) {
+        return false;
+      }
+      var args = Nozzle._getFuncArgs(func);
+      return args.length === obj.length - 1;
+    }
+
+    return false;
+  };
+
+  Nozzle._getFuncArgs = function(func) {
+    var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
+    var args = func.toString().match(FN_ARGS)[1].trim();
+    return args.length > 0 && args.split(/,\s*/) || [];
+  };
+
+  Nozzle._parseDependencies = function(func, type) {
+    if (!Nozzle._isInjectable(func)) {
+      throw new Error("Provided function is not injectable.");
+    }
+
     var args;
     if (_isArray(func)) {
       args = func.slice(0, func.length-1);
       func = func[func.length-1];
     } else {
-      var FN_ARGS = /^function\s*[^\(]*\(\s*([^\)]*)\)/m;
-      var argList = func.toString().match(FN_ARGS)[1].trim();
-      args = argList.length > 0 && argList.split(/,\s*/) || [];
+      args = Nozzle._getFuncArgs(func);
     }
 
     return {
@@ -35,11 +63,11 @@
   };
 
   Nozzle.prototype.factory = function(name, factory) {
-    this._setValue(name, this._parseDependencies(factory, TYPE_FACTORY));
+    this._setValue(name, Nozzle._parseDependencies(factory, TYPE_FACTORY));
   };
 
   Nozzle.prototype.singleton = function(name, factory) {
-    this._setValue(name, this._parseDependencies(factory, TYPE_SINGLETON));
+    this._setValue(name, Nozzle._parseDependencies(factory, TYPE_SINGLETON));
   };
 
   Nozzle.prototype.constant = function(name, value) {
@@ -112,7 +140,7 @@
   };
 
   Nozzle.prototype.inject = function(func) {
-    var parsed = this._parseDependencies(func);
+    var parsed = Nozzle._parseDependencies(func);
     return this._injectParsed(parsed);
   };
 
@@ -141,21 +169,9 @@
     }
   };
 
-  var _isInjectable = function(obj) {
-    if (_isFunction(obj)) {
-      return true;
-    }
-
-    if (_isArray(obj)) {
-      return _isFunction(obj[obj.length-1]);
-    }
-
-    return false;
-  };
-
   var shortcutNozzle = function(arg1, arg2) {
     if (_isString(arg1)) {
-      if (_isInjectable(arg2)) {
+      if (Nozzle._isInjectable(arg2)) {
         shortcutNozzle.factory(arg1, arg2);
       } else {
         shortcutNozzle.constant(arg1, arg2);
