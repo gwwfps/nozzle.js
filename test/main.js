@@ -12,7 +12,7 @@ suite('Main', function() {
       return f1.value;
     });
 
-    assert.equal(1, injected());
+    assert.equal(injected(), 1);
 
     assert.throws(function() {
       nozzle.factory('f1', function() {});
@@ -28,7 +28,7 @@ suite('Main', function() {
       return c1.value;
     });
 
-    assert.equal(1, injected());
+    assert.equal(injected(), 1);
 
     assert.throws(function() {
       nozzle.constant('c1', 2);
@@ -46,13 +46,13 @@ suite('Main', function() {
       return s1.value;
     });
 
-    assert.equal(1, injected());
+    assert.equal(injected(), 1);
 
     nozzle.inject(function(s1) {
       s1.value = 2;
     })();
 
-    assert.equal(2, injected());
+    assert.equal(injected(), 2);
 
     assert.throws(function() {
       nozzle.singleton('s1', function() {});
