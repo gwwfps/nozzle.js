@@ -6,7 +6,7 @@
   Nozzle.injectors = {};
 
   Nozzle.get = function(name) {
-    if (this.injectors[name] === void 0) {
+    if (!this.injectors.hasOwnProperty(name)) {
       this.injectors[name] = new Nozzle();
     }
     return this.injectors[name];
@@ -35,18 +35,25 @@
   };
 
   Nozzle.prototype.factory = function(name, factory) {
-    this.values[name] = this._parseDependencies(factory, TYPE_FACTORY);
+    this._setValue(name, this._parseDependencies(factory, TYPE_FACTORY));
   };
 
   Nozzle.prototype.singleton = function(name, factory) {
-    this.values[name] = this._parseDependencies(factory, TYPE_SINGLETON);
+    this._setValue(name, this._parseDependencies(factory, TYPE_SINGLETON));
   };
 
   Nozzle.prototype.constant = function(name, value) {
-    this.values[name] = {
+    this._setValue(name, {
       value: value,
       type: TYPE_CONSTANT
-    };
+    });
+  };
+
+  Nozzle.prototype._setValue = function(name, value) {
+    if (this.values.hasOwnProperty(name)) {
+      throw new Error("Value '" + name + "'' is already defined for this injector.");
+    }
+    this.values[name] = value;
   };
 
   Nozzle.prototype._checkDependencies = function(name, visited) {
