@@ -153,24 +153,24 @@
     return false;
   };
 
-  var defaultNozzle = new Nozzle();
-  var shortcutDispatch = function(arg1, arg2) {
+  var shortcutNozzle = function(arg1, arg2) {
     if (_isString(arg1)) {
       if (_isInjectable(arg2)) {
-        defaultNozzle.factory(arg1, arg2);
+        shortcutNozzle.factory(arg1, arg2);
       } else {
-        defaultNozzle.constant(arg1, arg2);
+        shortcutNozzle.constant(arg1, arg2);
       }
     } else {
-      defaultNozzle.inject(arg1);
+      shortcutNozzle.inject(arg1);
     }
   };
+  shortcutNozzle.__proto__ = new Nozzle();
 
   if (typeof module !== 'undefined') {
     module.exports = Nozzle;
-    Nozzle.zz = shortcutDispatch;
+    Nozzle.zz = shortcutNozzle;
   } else {
     this.Nozzle = Nozzle;
-    this.zz = shortcutDispatch;
+    this.zz = shortcutNozzle;
   }
 })();
