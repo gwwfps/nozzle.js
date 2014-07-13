@@ -95,7 +95,7 @@
     }
 
     var chain = visited.concat([name]);
-    if (_arrayContains(visited, name)) {
+    if (visited.indexOf(name) !== -1) {
       throw new Error("Cycle found in dependency chain: " + chain);
     }
     var dependencies  = value.dependencies;
@@ -155,19 +155,6 @@
   var _isArray = Array.isArray || _toStringTypeComp('Array');
   var _isString = _toStringTypeComp('String');
   var _isFunction = _toStringTypeComp('Function');
-
-  var _arrayContains = function(array, element) {
-    if (Array.prototype.indexOf) {
-      return array.indexOf(element) !== -1;
-    } else {
-      for (var i = 0; i < array.length; i++) {
-        if (array[i] === element) {
-          return true;
-        }
-      }
-      return false;
-    }
-  };
 
   var shortcutNozzle = function(arg1, arg2) {
     if (_isString(arg1)) {
