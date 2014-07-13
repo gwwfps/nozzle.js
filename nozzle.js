@@ -15,18 +15,18 @@
   var TYPE_CONSTANT = 'constant';
 
   Nozzle._isInjectable = function(obj) {
-    if (_isFunction(obj)) {
+    if (typeof obj === 'function') {
       return true;
     }
 
-    if (_isArray(obj)) {
+    if (Array.isArray(obj)) {
       for (var i = 0; i < obj.length - 1; i++) {
-        if (!_isString(obj[i])) {
+        if (typeof obj[i] !== 'string') {
           return false;
         }
       }
       var func = obj[obj.length-1];
-      if (!_isFunction(func)) {
+      if (typeof func !== 'function') {
         return false;
       }
       var args = Nozzle._getFuncArgs(func);
@@ -48,7 +48,7 @@
     }
 
     var args;
-    if (_isArray(func)) {
+    if (Array.isArray(func)) {
       args = func.slice(0, func.length-1);
       func = func[func.length-1];
     } else {
@@ -142,22 +142,10 @@
   Nozzle.prototype.inject = function(func) {
     var parsed = Nozzle._parseDependencies(func);
     return this._injectParsed(parsed);
-  };
-
-  // Utility functions for determining object types
-
-  var _toStringTypeComp = function(typeName) {
-    return function(obj) {
-      return Object.prototype.toString.call(obj) === '[object ' + typeName + ']';
-    };
-  };
-
-  var _isArray = Array.isArray || _toStringTypeComp('Array');
-  var _isString = _toStringTypeComp('String');
-  var _isFunction = _toStringTypeComp('Function');
+  };  
 
   var shortcutNozzle = function(arg1, arg2) {
-    if (_isString(arg1)) {
+    if (typeof arg1 === 'string') {
       if (Nozzle._isInjectable(arg2)) {
         shortcutNozzle.factory(arg1, arg2);
       } else {
